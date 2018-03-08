@@ -35,11 +35,11 @@
 				</center>
 				<br><br><br><br>
 				<center>
-					<button type="submit" class="btn btn-outline-warning btn-lg">Run</button>
+					<button id="run" type="submit" class="btn btn-outline-warning btn-lg">Run</button>
 				</center>
 				<br>
 				<center>
-					<button type="submit" class="btn btn-outline-danger btn-lg">Pause</button>
+					<button id="pause" submit" class="btn btn-outline-danger btn-lg">Pause</button>
 				</center>
 			</div>
 			<div class="col-1"></div>
@@ -59,7 +59,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-2"></div>
-			<div class="col-2">
+			<div class="col-3">
 				<h5>Population Size</h5>
 			</div>
 			<div class="col-5">
@@ -74,18 +74,66 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-2"></div>
-			<div class="col-2">
+			<div class="col-3">
 				<h5>Mutation Chance</h5>
 			</div>
 			<div class="col-5">
-				<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="mutation">
+				<input type="range" style="width: 80%;" min="1.0" max="5.0" value="2.5" class="slider" id="mutationChance">
 			</div>
 			<div class="col-1">
-				<span id="mutationres"></span>
+				<span id="mutcres"></span>
 			</div>
 			<div class="col-2"></div>
 		</div>
 	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-2"></div>
+			<div class="col-3">
+				<h5>Mutation Amount</h5>
+			</div>  
+			<div class="col-5">
+				<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="mutationAmount">
+			</div>
+			<div class="col-1">
+				<span id="mutares"></span>
+			</div>
+			<div class="col-2"></div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-2"></div>
+			<div class="col-3">
+				<h5>Selection Cutoff</h5>
+			</div>
+			<div class="col-5">
+				<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="selection">
+			</div>
+			<div class="col-1">
+				<span id="selectionres"></span>
+			</div>
+			<div class="col-2"></div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-2"></div>
+			<div class="col-3">
+				<h5>Number of Polygon</h5>
+			</div>
+			<div class="col-5">
+				<input type="range" style="width: 80%;" min="1" max="500" value="250" class="slider" id="polygon">
+			</div>
+			<div class="col-1">
+				<span id="polyres"></span>
+			</div>
+			<div class="col-2"></div>
+		</div>
+	</div>
+
+		
+
 	<br><br>
 	<div class="container">
 		<div class="row">
@@ -127,6 +175,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 	<script src="GAPainting.js"></script>
-	<script src="silder.js"></script>
+
 </body>
 </html>
