@@ -27,6 +27,10 @@ var geneLen;
 //hard coded
 var geneSize = 4  + vertices * 2;
 
+var curData = [];
+
+var count = 0;
+
 window.onload = function(){
 	init();
 	  
@@ -50,11 +54,12 @@ window.onload = function(){
 
 function runGA() {
 	$('#run').text('Run');
-	while (true) {
+	while (count < 1000) {
+		count++;
 		generatePopulation();
 		numOfGenerations++;
-		var fittest = population.getFittest();
-		var totalTime = ((new Date().getTime() - startTime) / 1000);
+		var fittest = getFittest();
+		var totalTime = ((new Date().getTime() - beginTime) / 1000);
 		// var timePerGeneration = (totalTime / numOfGenerations) * 1000;
 		// var timePerEvolution = (totalTime / numOfEvolutions) * 1000;
 		var currentFitness = (fittest.fitness * 100);
@@ -66,7 +71,7 @@ function runGA() {
 		// 	worstFitness = currentFitness;
 		// }
 		/* draw the best fit to output */
-		drawPolygon(fittest, contextRes, 350, 350);
+		drawPolygon(contextRes, 350, 350, fittest);
 		/* update statistics */
 		document.getElementById("runTime").innerHTML = timeFormat(Math.round(totalTime));
 		document.getElementById("numOfGenerations").innerHTML = numOfGenerations;
@@ -107,18 +112,25 @@ function generatePopulation() {
 	          var randIndividual = i;
 	          while (randIndividual == i)
 	            randIndividual = (Math.random() * selectCount) >> 0;
-	          	offspring.push(new Individual(Math.random(), this.individuals[i].dna,
-	                                        this.individuals[randIndividual].dna));
+	          	offspring.push(new Individual(Math.random(), individuals[i].gene,
+	                                        individuals[randIndividual].gene));
 	        }
 	    }
 	    individuals.length = size;
 	} else {
-		var parent = this.individuals[0];
+		var parent = individuals[0];
+		console.log(individuals.length)
 		var child = new Individual(parent.gene, parent.gene);
 
 		if (child.fitness > parent.fitness)
 		individuals = [child];
 	}
+}
+
+function getFittest() {
+	return individuals.sort(function(a, b) {
+      return b.fitness - a.fitness;
+    })[0];
 }
 
 function timeFormat(s) {
@@ -205,7 +217,7 @@ function Individual(randInt, father, mother){
 	drawPolygon(contextCur,resolution, resolution, this);
 
 
-	var imgData = getImageData(0, 0, resolution, resolution).data;
+	var imgData = contextCur.getImageData(0, 0, resolution, resolution).data;
 	var diff = 0;
 
 
@@ -214,7 +226,7 @@ function Individual(randInt, father, mother){
 	//get the fitness value for the gene
 	//sum differences
 	for(var i = 0; i < 4 *  resolution * resolution; i++){
-		diff += Math.abs(imageData[i] - workingData[i]);
+		diff += Math.abs(imgData[i] - curData[i]);
 	}
 
 	this.fitness = 1 - diff / (resolution * resolution * 256 * 4);
@@ -222,7 +234,6 @@ function Individual(randInt, father, mother){
 
 
 function drawPolygon(context, width, height, individual){
-
 	context.fillStyle = '#000';
 	context.fillRect(0, 0, width, height);
 	//draw gene sequentially
@@ -248,8 +259,8 @@ function drawPolygon(context, width, height, individual){
 		individual.gene[i + 3] + ')'; 
 
 		//create a polygon
-		ctx.fillStyle = styleString;
-		ctx.fill();
+		context.fillStyle = styleString;
+		context.fill();
 		
   }
 
@@ -265,6 +276,21 @@ function drawOriginalImage()
     // contextRes.drawImage(base_image, 0, 0);
   }
 
+}
+
+function initPopulation() {
+	for (var i = 0; i < 50; i++)
+      individuals.push(new Individual());
+  	//   console.log(populationSize)
+  	// console.log(individuals.length)
+}
+
+
+function initCurData(){
+    var imgData = contextOri.getImageData(0,0, resolution, resolution).data;
+    for(var i = 0; i < 4 * resolution * resolution; i++){
+        curData[i] = imgData[i];
+    }
 }
 
 function init(){
@@ -304,6 +330,8 @@ function init(){
 		val5.innerHTML = polygonNumber;
 	}
 	drawOriginalImage();
+	initPopulation();
+	initCurData();
 }
 
 
