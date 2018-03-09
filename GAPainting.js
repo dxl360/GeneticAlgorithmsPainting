@@ -18,6 +18,8 @@ var resolution = 75;
 //specify the number of vertices, which is now initialized to be 
 var vertices = 3;
 
+
+
 //initialized in the init 
 var geneLen;
 //hard coded
