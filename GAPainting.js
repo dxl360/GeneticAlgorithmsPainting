@@ -3,8 +3,8 @@ var canvasRes = document.getElementById('resultImg');
 var contextOri = canvasOri.getContext('2d');
 var contextRes = canvasRes.getContext('2d');
 
-contextCur --- workingContext
-canvasCur --- workingCanvas
+var contextCur;
+var canvasCur;
 
 var populationSize;
 var mutationChance;
