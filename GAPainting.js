@@ -1,7 +1,9 @@
 var canvasOri = document.getElementById('originalImg');
 var canvasRes = document.getElementById('resultImg');
+var canvasCur = document.getElementById('current');
 var contextOri = canvasOri.getContext('2d');
 var contextRes = canvasRes.getContext('2d');
+var contextCur = canvasCur.getContext('2d');
 
 var populationSize;
 var mutationChance;
@@ -14,6 +16,8 @@ var numOfGenerations = 0;
 // var numOfEvolutions = 0;
 // var bestFitness = 0;
 // var worstFitness = 100;
+var beginTime;
+var lapseTime = 0;
 
 window.onload = function(){
 	init();
@@ -24,6 +28,11 @@ window.onload = function(){
 		runGA();
 	};
 	document.getElementById("pause").onclick = function () {
+		// Pause Evolve()
+		alert("Paused");
+		pauseGA();
+	};
+	document.getElementById("stop").onclick = function () {
 		// Pause Evolve()
 		alert("Stopped");
 		stopGA();
@@ -54,6 +63,22 @@ function runGA() {
 		document.getElementById("numOfGenerations").innerHTML = numOfGenerations;
 		document.getElementById("currentFitness").innerHTML = currentFitness.toFixed(2) + '%';
 	}
+}
+
+function pauseGA() {
+	lapseTime = new Date().getTime() - beginTime;
+}
+
+function stopGA() {
+	numOfGenerations = null;
+    beginTime = null;
+    // bestFitness = 0;
+    // worstFitness = 100;
+    lapseTime = 0;
+    document.getElementById("runTime").innerHTML = "0:00";
+    /* Clear the drawing */
+    contextRes.clearRect(0, 0, 350, 350);
+    contextCur.clearRect(0, 0, resolution, resolution);
 }
 
 function generatePopulation() {
