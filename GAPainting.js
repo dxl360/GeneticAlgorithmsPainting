@@ -236,9 +236,14 @@ function Individual(randInt, father, mother){
 function drawPolygon(context, width, height, individual){
 	context.fillStyle = '#000';
 	context.fillRect(0, 0, width, height);
+	// console.log(geneLen);
 	//draw gene sequentially
 	for(var i = 0; i < geneLen; i += geneSize){
-
+		console.log(i)
+		context.beginPath();
+		context.rect(20, 20, 150, 100);
+		context.fillStyle = "red";
+		context.fill();
 		//starting vertex
 		context.beginPath();
 
@@ -326,8 +331,10 @@ function init(){
 		val4.innerHTML = selectionCutoff+'%';
 	}
 	document.getElementById("polygon").oninput = function(){
-		polygonNumber = event.srcElement.value;	
+		polygonNumber = event.srcElement.value;
+		geneLen = polygonNumber * (4 + vertices * 2);
 		val5.innerHTML = polygonNumber;
+		console.log(polygonNumber);
 	}
 	drawOriginalImage();
 	initPopulation();
