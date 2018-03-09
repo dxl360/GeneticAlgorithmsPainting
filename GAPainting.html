@@ -41,6 +41,10 @@
 				<center>
 					<button id="pause" submit" class="btn btn-outline-danger btn-lg">Pause</button>
 				</center>
+				<br>
+				<center>
+					<button id="stop" submit" class="btn btn-outline-success btn-lg">Stop</button>
+				</center>
 			</div>
 			<div class="col-1"></div>
 		</div>
@@ -153,21 +157,22 @@
 					<tbody>
 						<tr>
 							<th scope="row">Run time</th>
-							<td>100</td>
+							<td id = "runTime"></td>
 						</tr>
 						<tr>
 							<th scope="row">Number of generations</th>
-							<td>200</td>
+							<td id = "numOfGenerations"></td>
 						</tr>
 						<tr>
 							<th scope="row">Current fitness</th>
-							<td>100%</td>
+							<td id = "currentFitness"></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
+	<canvas id="current" width="75" height="75" style="display: none;"></canvas>
 	<br><br>
 
 
