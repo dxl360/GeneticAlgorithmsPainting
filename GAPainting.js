@@ -24,9 +24,6 @@ var geneLen;
 var geneSize = 4  + vertices * 2;
 
 
-
-
-
 window.onload = function(){
 	make_base();
 	init();
