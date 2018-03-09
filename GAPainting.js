@@ -18,12 +18,13 @@ var numOfGenerations = 0;
 // var worstFitness = 100;
 var beginTime;
 var lapseTime = 0;
+var resolution = 75;
 
 window.onload = function(){
 	init();
 	  
 	document.getElementById("run").onclick = function () {
-		alert("Starting");
+		alert("Running");
 		// Evolve();
 		runGA();
 	};
@@ -41,6 +42,7 @@ window.onload = function(){
 }
 
 function runGA() {
+	$('#run').text('Run');
 	while (true) {
 		generatePopulation();
 		numOfGenerations++;
@@ -67,6 +69,7 @@ function runGA() {
 
 function pauseGA() {
 	lapseTime = new Date().getTime() - beginTime;
+	$('#run').text('Resume');
 }
 
 function stopGA() {
