@@ -1,10 +1,9 @@
 var canvasOri = document.getElementById('originalImg');
 var canvasRes = document.getElementById('resultImg');
+var canvasCur = document.getElementById('current');
 var contextOri = canvasOri.getContext('2d');
 var contextRes = canvasRes.getContext('2d');
-
-var contextCur;
-var canvasCur;
+var contextCur = canvasCur.getContext('2d');
 
 var populationSize;
 var mutationChance;
@@ -12,47 +11,173 @@ var mutationAmount;
 var selectionCutoff;
 var polygonNumber;
 
+var individuals = [];
+var numOfGenerations = 0;
+// var numOfEvolutions = 0;
+// var bestFitness = 0;
+// var worstFitness = 100;
+var beginTime;
+var lapseTime = 0;
 //speficy resolution (workingSize)
 var resolution = 75;
-
 //specify the number of vertices, which is now initialized to be 
 var vertices = 3;
-
-
-
 //initialized in the init 
 var geneLen;
 //hard coded
 var geneSize = 4  + vertices * 2;
 
+var curData = [];
+
+var count = 0;
+
+var randomInheritance = true;
 
 window.onload = function(){
-	make_base();
 	init();
 	  
 	document.getElementById("run").onclick = function () {
-		alert("Starting");
-		Evolve();
+		alert("Running");
+		// Evolve();
+		runGA();
 	};
 	document.getElementById("pause").onclick = function () {
 		// Pause Evolve()
+		alert("Paused");
+		pauseGA();
+	};
+	document.getElementById("stop").onclick = function () {
+		// Pause Evolve()
 		alert("Stopped");
+		stopGA();
 	};
 
 }
 
-function Evolve(){
+function runGA() {
+	$('#run').text('Run');
+	while (count < 1000) {
+		count++;
+		generatePopulation();
+		numOfGenerations++;
+		var fittest = getFittest();
+		var totalTime = ((new Date().getTime() - beginTime) / 1000);
+		// var timePerGeneration = (totalTime / numOfGenerations) * 1000;
+		// var timePerEvolution = (totalTime / numOfEvolutions) * 1000;
+		var currentFitness = (fittest.fitness * 100);
+		// if (currentFitness > bestFitness) {
+		// 	bestFitness = currentFitness;
+		// 	/* Improvement was made */
+		// 	numberOfImprovements++;
+		// 	} else if (currentFitness < worstFitness) {
+		// 	worstFitness = currentFitness;
+		// }
+		/* draw the best fit to output */
+		drawPolygon(contextRes, 350, 350, fittest);
+		/* update statistics */
+		document.getElementById("runTime").innerHTML = timeFormat(Math.round(totalTime));
+		document.getElementById("numOfGenerations").innerHTML = numOfGenerations;
+		document.getElementById("currentFitness").innerHTML = currentFitness.toFixed(2) + '%';
+	}
+}
 
-	//Replace the generated result image from every 100 evolution
-	resImage = new Image();
-	resImage.src = 'img/fake.jpg';
-	resImage.onload = function(){
-    	contextRes.drawImage(resImage, 0, 0);
-  }
+function pauseGA() {
+	lapseTime = new Date().getTime() - beginTime;
+	$('#run').text('Resume');
+}
 
+function stopGA() {
+	numOfGenerations = null;
+    beginTime = null;
+    // bestFitness = 0;
+    // worstFitness = 100;
+    lapseTime = 0;
+    document.getElementById("runTime").innerHTML = "0:00";
+    /* Clear the drawing */
+    contextRes.clearRect(0, 0, 350, 350);
+    contextCur.clearRect(0, 0, resolution, resolution);
+}
 
-};
+function generateGene() {
+	var i = new Individual();
+	i.fitness = 0.5;
+	/* Generate RGBA color values */
+    i.gene.push(Math.random(), // R
+			Math.random(), // G
+			Math.random(), // B
+			Math.max(Math.random() * Math.random(), 0.2)); // A
 
+    /* Generate XY positional values */
+    var x = Math.random();
+    var y = Math.random();
+
+    for (var j = 0; j < vertices; j++) {
+      i.gene.push(x + Math.random() - 0.5, // X
+                 		y + Math.random() - 0.5); // Y
+    }
+    return i;
+}
+
+function generatePopulation() {
+	if (individuals.length > 1) {
+		var size = individuals.length;
+    	var offspring = [];
+    	/* The number of individuals from the current generation to select for breeding */
+		var selectCount = Math.floor(individuals.length * selectionCutoff);
+		/* The number of individuals to randomly generate */
+		var randCount = Math.ceil(1 / selectionCutoff);
+		individuals = individuals.sort(function(a, b) {
+			return b.fitness - a.fitness;
+		});
+		for (var i = 0; i < selectCount; i++) {
+	        for (var j = 0; j < randCount; j++) {
+	          var randIndividual = i;
+	          while (randIndividual == i)
+				randIndividual = (Math.random() * selectCount) >> 0;
+				console.log("Rand Ind");
+				console.log(randIndividual);
+	          	offspring.push(new Individual(Math.random(), individuals[i].gene,
+				  individuals[randIndividual].gene));
+	        }
+	    }
+		individuals = individuals.concat(offspring);
+		console.log("Offspring");
+		console.log(offspring);
+	    individuals.length = size;
+	} else {
+		var parent = individuals[0];
+		var child = new Individual(parent.gene, parent.gene);
+		if (child.fitness > parent.fitness)
+			individuals = [child];
+	}
+}
+
+function getFittest() {
+	return individuals.sort(function(a, b) {
+      return b.fitness - a.fitness;
+    })[0];
+}
+
+function timeFormat(s) {
+	var h = Math.floor(s / 3600);
+	var m = Math.floor(s % 3600 / 60);
+
+	s = Math.floor(s % 3600 % 60);
+
+	return ((h > 0 ? h + ':' : '') +
+	        (m > 0 ? (h > 0 && m < 10 ? '0' : '') +
+	         m + ':' : '0:') + (s < 10 ? '0' : '') + s);
+}
+
+// function Evolve(){
+
+// 	//Replace the generated result image from every 100 evolution
+// 	resImage = new Image();
+// 	resImage.src = 'img/fake.jpg';
+// 	resImage.onload = function(){
+//     	contextRes.drawImage(resImage, 0, 0);
+//   }
+// };
 
 /* Each individual represents a single gene in the gene pool.
 Randomly decide in the Population if it's inherited from both parents or randomly generated */
@@ -100,7 +225,7 @@ function Individual(randInt, father, mother){
 			  if (Math.random() < mutationChance) {
 	
 				/* Apply the random mutation */
-				singleGene += Math.random() * mutatationAmount * 2 - mutatationAmount;
+				singleGene += Math.random() * mutationAmount * 2 - mutationAmount;
 	
 				/* Keep the value in range */
 				if (singleGene < 0)
@@ -116,17 +241,13 @@ function Individual(randInt, father, mother){
 
 	drawPolygon(contextCur,resolution, resolution, this);
 
-
-	var imgData = getImageData(0, 0, resolution, resolution).data;
+	var imgData = contextCur.getImageData(0, 0, resolution, resolution).data;
 	var diff = 0;
-
-
-
 
 	//get the fitness value for the gene
 	//sum differences
 	for(var i = 0; i < 4 *  resolution * resolution; i++){
-		diff += Math.abs(imageData[i] - workingData[i]);
+		diff += Math.abs(imgData[i] - curData[i]);
 	}
 
 	this.fitness = 1 - diff / (resolution * resolution * 256 * 4);
@@ -134,15 +255,17 @@ function Individual(randInt, father, mother){
 
 
 function drawPolygon(context, width, height, individual){
-
 	context.fillStyle = '#000';
 	context.fillRect(0, 0, width, height);
 	//draw gene sequentially
 	for(var i = 0; i < geneLen; i += geneSize){
-
+		// context.beginPath();
+		// context.rect(20, 20, 150, 100);
+		// context.fillStyle = "red";
+		// context.fill();
 		//starting vertex
 		context.beginPath();
-
+		
 		//Could tune some parameters here
 		context.moveTo(individual.gene[i + 4] * width, individual.gene[i + 5] * height);
 
@@ -160,26 +283,36 @@ function drawPolygon(context, width, height, individual){
 		individual.gene[i + 3] + ')'; 
 
 		//create a polygon
-		ctx.fillStyle = styleString;
-		ctx.fill();
+		context.fillStyle = styleString;
+		context.fill();
 		
   }
 
 }
 
 
-
-
-
-function make_base()
+function drawOriginalImage()
 {
   base_image = new Image();
   base_image.src = 'img/marilyn-monroe.jpg';
   base_image.onload = function(){
     contextOri.drawImage(base_image, 0, 0);
-    contextRes.drawImage(base_image, 0, 0);
+    // contextRes.drawImage(base_image, 0, 0);
   }
 
+}
+
+function initPopulation() {
+    individuals.push(generateGene());
+    individuals.push(generateGene());
+}
+
+
+function initCurData(){
+    var imgData = contextOri.getImageData(0,0, resolution, resolution).data;
+    for(var i = 0; i < 4 * resolution * resolution; i++){
+        curData[i] = imgData[i];
+    }
 }
 
 function init(){
@@ -188,33 +321,50 @@ function init(){
 	var val3 = document.getElementById("mutares");	
 	var val4 = document.getElementById("selectionres");
 	var val5 = document.getElementById("polyres");
+	var val6 = document.getElementById("runTime");
+	var val7 = document.getElementById("numOfGenerations");
+	var val8 = document.getElementById("currentFitness");
 	val1.innerHTML = 50;
 	val2.innerHTML = 2.5+'%';
 	val3.innerHTML = 50+'%';
 	val4.innerHTML = 50+'%';
 	val5.innerHTML = 250;
+	val6.innerHTML = 10;
+	val7.innerHTML = 50;
+	val8.innerHTML = 0+'%';
 	document.getElementById("population").oninput = function(){
 		val1.innerHTML = populationSize = event.srcElement.value;	
 	}
 	document.getElementById("mutationChance").oninput = function(){
 		mutationChance = event.srcElement.value;	
 		val2.innerHTML = mutationChance+'%';
+		mutationChance = parseFloat(event.srcElement.value)/100;
 	}
 	document.getElementById("mutationAmount").oninput = function(){
 		mutationAmount = event.srcElement.value;	
 		val3.innerHTML = mutationAmount+'%';
+		mutationAmount = parseFloat(event.srcElement.value)/100;
 	}
 	document.getElementById("selection").oninput = function(){
-		selectionCutoff = event.srcElement.value;	
+		selectionCutoff = event.srcElement.value;
 		val4.innerHTML = selectionCutoff+'%';
+		selectionCutoff = parseFloat(event.srcElement.value)/100;
 	}
 	document.getElementById("polygon").oninput = function(){
-		polygonNumber = event.srcElement.value;	
-		geneLen = polygonNumber * (4 + vertices * 2);
+		polygonNumber = event.srcElement.value;
+		geneLen = polygonNumber * (4+ vertices * 2);
 		val5.innerHTML = polygonNumber;
 	}
-
-	
+	drawOriginalImage();
+	initPopulation();
+	initCurData();
 }
+
+
+
+
+
+
+
 
 
