@@ -129,13 +129,16 @@ function generatePopulation() {
 		individuals = individuals.sort(function(a, b) {
 			return b.fitness - a.fitness;
 		});
+
+		console.log("Select Count");
+		console.log(selectCount);
 		for (var i = 0; i < selectCount; i++) {
 	        for (var j = 0; j < randCount; j++) {
 	          var randIndividual = i;
 	          while (randIndividual == i)
 				randIndividual = (Math.random() * selectCount) >> 0;
-				console.log("Rand Ind");
-				console.log(randIndividual);
+				//console.log("Rand Ind");
+				//console.log(randIndividual);
 	          	offspring.push(new Individual(Math.random(), individuals[i].gene,
 				  individuals[randIndividual].gene));
 	        }
@@ -338,17 +341,17 @@ function init(){
 	document.getElementById("mutationChance").oninput = function(){
 		mutationChance = event.srcElement.value;	
 		val2.innerHTML = mutationChance+'%';
-		mutationChance = parseFloat(event.srcElement.value)/100;
+		mutationChance = Math.ceil(event.srcElement.value/100);
 	}
 	document.getElementById("mutationAmount").oninput = function(){
 		mutationAmount = event.srcElement.value;	
 		val3.innerHTML = mutationAmount+'%';
-		mutationAmount = parseFloat(event.srcElement.value)/100;
+		mutationAmount = Math.ceil(event.srcElement.value/100);
 	}
 	document.getElementById("selection").oninput = function(){
 		selectionCutoff = event.srcElement.value;
 		val4.innerHTML = selectionCutoff+'%';
-		selectionCutoff = parseFloat(event.srcElement.value)/100;
+		selectionCutoff = Math.ceil(event.srcElement.value/100);
 	}
 	document.getElementById("polygon").oninput = function(){
 		polygonNumber = event.srcElement.value;
