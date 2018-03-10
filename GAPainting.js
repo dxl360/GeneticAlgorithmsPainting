@@ -31,6 +31,8 @@ var curData = [];
 
 var count = 0;
 
+var randomInheritance = true;
+
 window.onload = function(){
 	init();
 	  
@@ -96,6 +98,25 @@ function stopGA() {
     contextCur.clearRect(0, 0, resolution, resolution);
 }
 
+function generateGene() {
+	var i = new Individual();
+	/* Generate RGBA color values */
+    i.gene.push(Math.random(), // R
+			Math.random(), // G
+			Math.random(), // B
+			Math.max(Math.random() * Math.random(), 0.2)); // A
+
+    /* Generate XY positional values */
+    var x = Math.random();
+    var y = Math.random();
+
+    for (var j = 0; j < vertices; j++) {
+      i.gene.push(x + Math.random() - 0.5, // X
+                 		y + Math.random() - 0.5); // Y
+    }
+    return i;
+}
+
 function generatePopulation() {
 	if (individuals.length > 1) {
 		var size = individuals.length;
@@ -116,14 +137,13 @@ function generatePopulation() {
 	                                        individuals[randIndividual].gene));
 	        }
 	    }
+	    individuals = individuals.concat(offspring);
 	    individuals.length = size;
 	} else {
 		var parent = individuals[0];
-		console.log(individuals.length)
 		var child = new Individual(parent.gene, parent.gene);
-
 		if (child.fitness > parent.fitness)
-		individuals = [child];
+			individuals = [child];
 	}
 }
 
@@ -216,12 +236,8 @@ function Individual(randInt, father, mother){
 
 	drawPolygon(contextCur,resolution, resolution, this);
 
-
 	var imgData = contextCur.getImageData(0, 0, resolution, resolution).data;
 	var diff = 0;
-
-
-
 
 	//get the fitness value for the gene
 	//sum differences
@@ -236,14 +252,13 @@ function Individual(randInt, father, mother){
 function drawPolygon(context, width, height, individual){
 	context.fillStyle = '#000';
 	context.fillRect(0, 0, width, height);
-	// console.log(geneLen);
+	console.log(geneLen);
 	//draw gene sequentially
 	for(var i = 0; i < geneLen; i += geneSize){
-		console.log(i)
-		context.beginPath();
-		context.rect(20, 20, 150, 100);
-		context.fillStyle = "red";
-		context.fill();
+		// context.beginPath();
+		// context.rect(20, 20, 150, 100);
+		// context.fillStyle = "red";
+		// context.fill();
 		//starting vertex
 		context.beginPath();
 
@@ -284,10 +299,8 @@ function drawOriginalImage()
 }
 
 function initPopulation() {
-	for (var i = 0; i < 50; i++)
-      individuals.push(new Individual());
-  	//   console.log(populationSize)
-  	// console.log(individuals.length)
+    individuals.push(generateGene());
+    individuals.push(generateGene());
 }
 
 
@@ -334,7 +347,6 @@ function init(){
 		polygonNumber = event.srcElement.value;
 		geneLen = polygonNumber * (4 + vertices * 2);
 		val5.innerHTML = polygonNumber;
-		console.log(polygonNumber);
 	}
 	drawOriginalImage();
 	initPopulation();
