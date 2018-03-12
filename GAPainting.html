@@ -1,180 +1,205 @@
 <!doctype html>
 <html lang="en">
-<head>
-		<meta charset="UTF-8">
+	<head>
+		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>GA Painting Demo</title>
 
 		<!-- link to Bootstrap -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 		<link rel="stylesheet" href="GAPainting.css">
-</head>
-<body>
-	<header class="blog-header py-3 bg-warning text-center">
-		<a class="blog-header-logo text-white">
-			<h1>Genetic Algorithm for Painting Demo</h1>
-		</a>
-	</header>
-	<div class="py-3 text-center">
-		UCLA CS275 18 Winter Project
-	</div>
-	<div class="py-1 text-center">
-		LI, DUAN; YUAN, JINGYI; XU, YELI; YU, JINGXI; LIU, TIANYI
-	</div>
-	<br>
-	<div class="container">
-		<div class="row">
-			<div class="col-1"></div>
-			<div class="col-10">
-				<h2>Result</h2>
-				<hr style="width: 100%; color: black; height: 1px;" />
-				<!-- <div class="mx-auto"> -->
-				<center>
-					<canvas id="originalImg" class="rounded float-left" width="350" height="350" style="margin-right: 4px;"></canvas>
-					<canvas id="resultImg" class="rounded float-right" width="350" height="350" style="margin-right: 4px;"></canvas>
-				</center>
-				<br><br><br><br>
-				<center>
-					<button id="run" type="submit" class="btn btn-outline-warning btn-lg">Run</button>
-				</center>
-				<br>
-				<center>
-					<button id="pause" submit" class="btn btn-outline-danger btn-lg">Pause</button>
-				</center>
-			</div>
-			<div class="col-1"></div>
-		</div>
-	</div>
-	<br><br><br><br>
-	<div class="container">
-		<div class="row">
-			<div class="col-1"></div>
-			<div class="col-10">
-				<h2>Parameters</h2>
-				<hr style="width: 100%; color: black; height: 1px;" />
-			</div>
-		</div>
-	</div>
-	<br>
-	<div class="container">
-		<div class="row">
-			<div class="col-2"></div>
-			<div class="col-3">
-				<h5>Population Size</h5>
-			</div>
-			<div class="col-5">
-				<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="population">
-			</div>
-			<div class="col-1">
-				<span id="populationres"></span>
-			</div>
-			<div class="col-2"></div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-2"></div>
-			<div class="col-3">
-				<h5>Mutation Chance</h5>
-			</div>
-			<div class="col-5">
-				<input type="range" style="width: 80%;" min="1.0" max="5.0" value="2.5" class="slider" id="mutationChance">
-			</div>
-			<div class="col-1">
-				<span id="mutcres"></span>
-			</div>
-			<div class="col-2"></div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-2"></div>
-			<div class="col-3">
-				<h5>Mutation Amount</h5>
-			</div>  
-			<div class="col-5">
-				<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="mutationAmount">
-			</div>
-			<div class="col-1">
-				<span id="mutares"></span>
-			</div>
-			<div class="col-2"></div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-2"></div>
-			<div class="col-3">
-				<h5>Selection Cutoff</h5>
-			</div>
-			<div class="col-5">
-				<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="selection">
-			</div>
-			<div class="col-1">
-				<span id="selectionres"></span>
-			</div>
-			<div class="col-2"></div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-2"></div>
-			<div class="col-3">
-				<h5>Number of Polygon</h5>
-			</div>
-			<div class="col-5">
-				<input type="range" style="width: 80%;" min="1" max="500" value="250" class="slider" id="polygon">
-			</div>
-			<div class="col-1">
-				<span id="polyres"></span>
-			</div>
-			<div class="col-2"></div>
-		</div>
-	</div>
+	</head>
 
-		
-
-	<br><br>
-	<div class="container">
-		<div class="row">
-			<div class="col-1"></div>
-			<div class="col-10">
-				<h2>Statistics</h2>
-				<hr style="width: 100%; color: black; height: 1px;" />
+	<body>
+		<header class="blog-header py-3 bg-warning text-center">
+			<a class="blog-header-logo text-white">
+				<h1>Genetic Algorithm for Painting Demo</h1>
+			</a>
+		</header>
+		<div class="py-3 text-center">
+			UCLA CS275 18 Winter Project
+		</div>
+		<div class="py-1 text-center">
+			LI, DUAN; YUAN, JINGYI; XU, YELI; YU, JINGXI; LIU, TIANYI
+		</div>
+		<br>
+		<div class="container">
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+					<h2>Result</h2>
+					<hr style="width: 100%; color: black; height: 1px;" />
+					<!-- <div class="mx-auto"> -->
+					<center>
+						<canvas id="originalCvs" class="rounded float-left" style="margin-right: 4px; width: 350px; height:350px"></canvas>
+						<canvas id="resultCvs" class="rounded float-right" style="margin-right: 4px; width: 350px; height:350px"></canvas>
+					</center>
+					<br><br><br><br>
+					<center>
+						<button id="run" class="btn btn-outline-warning btn-lg">Run</button>
+					</center>
+					<br>
+					<center>
+						<button id="stop" class="btn btn-outline-danger btn-lg">Pause</button>
+					</center>
+				</div>
+				<div class="col-1"></div>
 			</div>
 		</div>
-	</div>
-	<br>
-	<div class="container">
-		<div class="row">
-			<div class="col-2"></div>
-			<div class="col-8">
-				<table class="table table-striped">
-					<tbody>
-						<tr>
-							<th scope="row">Run time</th>
-							<td>100</td>
-						</tr>
-						<tr>
-							<th scope="row">Number of generations</th>
-							<td>200</td>
-						</tr>
-						<tr>
-							<th scope="row">Current fitness</th>
-							<td>100%</td>
-						</tr>
-					</tbody>
-				</table>
+		<br><br><br><br>
+		<div class="container">
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+					<h2>Parameters</h2>
+					<hr style="width: 100%; color: black; height: 1px;" />
+				</div>
 			</div>
 		</div>
-	</div>
-	<br><br>
+		<br>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3">
+					<h5>Gene Pool Size</h5>
+				</div>
+				<div class="col-5">
+					<input type="range" style="width: 80%;" min="1" max="100" value="50" class="slider" id="genePoolSize">
+				</div>
+				<div class="col-1">
+					<span id="genePoolSizeRes">50</span>
+				</div>
+				<div class="col-2"></div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3">
+					<h5>Mutation Rate</h5>
+				</div>
+				<div class="col-5">
+					<input type="range" style="width: 80%;" min="1" max="100" value="1" class="slider" id="mutationRate">
+				</div>
+				<div class="col-1">
+					<span id="mutationRateRes">1</span>
+				</div>
+				<div class="col-2"></div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3">
+					<h5>Mutation Amount</h5>
+				</div>  
+				<div class="col-5">
+					<input type="range" style="width: 80%;" min="1" max="100" value="10" class="slider" id="mutationAmount">
+				</div>
+				<div class="col-1">
+					<span id="mutationAmountRes">10</span>
+				</div>
+				<div class="col-2"></div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3">
+					<h5>Selection Cutoff</h5>
+				</div>
+				<div class="col-5">
+					<input type="range" style="width: 80%;" min="1" max="100" value="15" class="slider" id="selectionCutoff">
+				</div>
+				<div class="col-1">
+					<span id="selectionCutoffRes">15</span>
+				</div>
+				<div class="col-2"></div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3">
+					<h5>Polygon Number</h5>
+				</div>
+				<div class="col-5">
+					<input type="range" style="width: 80%;" min="1" max="500" value="125" class="slider" id="polygonNumber">
+				</div>
+				<div class="col-1">
+					<span id="polygonNumberRes">125</span>
+				</div>
+				<div class="col-2"></div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3">
+					<h5>Vertex Number</h5>
+				</div>
+				<div class="col-5">
+					<input type="range" style="width: 80%;" min="1" max="10" value="3" class="slider" id="vertexNumber">
+				</div>
+				<div class="col-1">
+					<span id="vertexNumberRes">3</span>
+				</div>
+				<div class="col-2"></div>
+			</div>
+		</div>
 
+		<br><br>
+		<div class="container">
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+					<h2>Statistics</h2>
+					<hr style="width: 100%; color: black; height: 1px;" />
+				</div>
+			</div>
+		</div>
+		<br>
 
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	<script src="GAPainting.js"></script>
+		<div class="container">
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-8">
+					<table class="table table-striped">
+						<tbody>
+							<tr>
+								<th scope="row">Time Passed</th>
+								<td id="time-passed"></td>
+							</tr>
+							<tr>
+								<th scope="row">Number of generations</th>
+								<td id="number-of-generations"></td>
+							</tr>
+							<tr>
+								<th scope="row">Average time per generation</th>
+								<td id="time-per-generation"></td>
+							</tr>
+							<tr>
+								<th scope="row">Average time per improvement</th>
+								<td id="time-per-improvement"></td>
+							</tr>
+							<tr>
+								<th scope="row">Current fitness</th>
+								<td id="current-fitness"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<br><br>
+		<img src="The_Girl_With_The_Pearl_Earring.png" id="originalImage" style="display: none;" />
+		<canvas id="curCvs" width="1" height="1" style="display: none;"></canvas>
 
-</body>
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="GAPainting.js"></script>
+
+	</body>
+
 </html>
