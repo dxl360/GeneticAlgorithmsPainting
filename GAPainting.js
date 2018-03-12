@@ -1,38 +1,44 @@
-var canvasOri = document.getElementById('originalImg');
-var canvasRes = document.getElementById('resultImg');
-var canvasCur = document.getElementById('current');
-var contextOri = canvasOri.getContext('2d');
-var contextRes = canvasRes.getContext('2d');
-var contextCur = canvasCur.getContext('2d');
-
-var populationSize;
-var mutationChance;
-var mutationAmount;
-var selectionCutoff;
-var polygonNumber;
-
-var individuals = [];
-var numOfGenerations = 0;
-// var numOfEvolutions = 0;
-// var bestFitness = 0;
-// var worstFitness = 100;
-var beginTime;
-var lapseTime = 0;
-//speficy resolution (workingSize)
-var resolution = 75;
-//specify the number of vertices, which is now initialized to be 
-var vertices = 3;
-//initialized in the init 
-var geneLen;
-//hard coded
-var geneSize = 4  + vertices * 2;
-
+var geneSeq = [];
 var curData = [];
 
-var count = 0;
+  /* The analytics pane elements */
+  var statistics;
+  
+  var originalImage;
 
-var randomInheritance = true;
 
+  //The original image canvas, context and the result image and context
+  var originalCvs;
+  var originalCtx;
+  var resultCvs;
+  var resultCtx;
+  //the current canvas and context
+  var curCvs;
+  var curCtx;
+
+  var genePoolSize;
+
+ 
+  //parameters for statistics
+  var resolution;
+  var polygonNum;
+  var vertices;
+  var selectionCutoff;
+  var mutationRate;
+  var mutationAmount;
+  var lowestFitness;
+  var highestFitness;
+  var numberOfGenerations;
+  var numberOfImprovements;
+
+  
+  var cycle;
+  var geneSize;
+  var geneLen;
+  var genePool;
+  var beginTime;
+  var resumedTime = 0;
+  
 window.onload = function(){
 	init();
 	  
@@ -100,6 +106,7 @@ function stopGA() {
 
 function generateGene() {
 	var i = new Individual();
+	i.fitness = 0.5;
 	/* Generate RGBA color values */
     i.gene.push(Math.random(), // R
 			Math.random(), // G
@@ -122,22 +129,32 @@ function generatePopulation() {
 		var size = individuals.length;
     	var offspring = [];
     	/* The number of individuals from the current generation to select for breeding */
-		var selectCount = Math.floor(individuals.length * selectionCutoff);
+		// var selectCount = Math.floor(individuals.length * selectionCutoff);
+		var selectCount = 7;
 		/* The number of individuals to randomly generate */
 		var randCount = Math.ceil(1 / selectionCutoff);
 		individuals = individuals.sort(function(a, b) {
 			return b.fitness - a.fitness;
 		});
+
+		// console.log("Select Count");
+		// console.log(selectCount);
 		for (var i = 0; i < selectCount; i++) {
 	        for (var j = 0; j < randCount; j++) {
 	          var randIndividual = i;
 	          while (randIndividual == i)
-	            randIndividual = (Math.random() * selectCount) >> 0;
+				randIndividual = (Math.random() * selectCount) >> 0;
+				//console.log("Rand Ind");
+				//console.log(randIndividual);
 	          	offspring.push(new Individual(Math.random(), individuals[i].gene,
-	                                        individuals[randIndividual].gene));
+				  individuals[randIndividual].gene));
 	        }
 	    }
-	    individuals = individuals.concat(offspring);
+		// individuals = individuals.concat(offspring);
+		individuals = offspring;
+		// console.log(individuals.length);
+		// console.log("Offspring");
+		// console.log(offspring);
 	    individuals.length = size;
 	} else {
 		var parent = individuals[0];
@@ -220,7 +237,7 @@ function Individual(randInt, father, mother){
 			  if (Math.random() < mutationChance) {
 	
 				/* Apply the random mutation */
-				singleGene += Math.random() * mutatationAmount * 2 - mutatationAmount;
+				singleGene += Math.random() * mutationAmount * 2 - mutationAmount;
 	
 				/* Keep the value in range */
 				if (singleGene < 0)
@@ -252,7 +269,6 @@ function Individual(randInt, father, mother){
 function drawPolygon(context, width, height, individual){
 	context.fillStyle = '#000';
 	context.fillRect(0, 0, width, height);
-	console.log(geneLen);
 	//draw gene sequentially
 	for(var i = 0; i < geneLen; i += geneSize){
 		// context.beginPath();
@@ -261,7 +277,7 @@ function drawPolygon(context, width, height, individual){
 		// context.fill();
 		//starting vertex
 		context.beginPath();
-
+		
 		//Could tune some parameters here
 		context.moveTo(individual.gene[i + 4] * width, individual.gene[i + 5] * height);
 
@@ -334,31 +350,25 @@ function init(){
 	document.getElementById("mutationChance").oninput = function(){
 		mutationChance = event.srcElement.value;	
 		val2.innerHTML = mutationChance+'%';
+		mutationChance = Math.ceil(event.srcElement.value/100);
 	}
 	document.getElementById("mutationAmount").oninput = function(){
 		mutationAmount = event.srcElement.value;	
 		val3.innerHTML = mutationAmount+'%';
+		mutationAmount = Math.ceil(event.srcElement.value/100);
 	}
 	document.getElementById("selection").oninput = function(){
-		selectionCutoff = event.srcElement.value;	
+		selectionCutoff = event.srcElement.value;
 		val4.innerHTML = selectionCutoff+'%';
+		selectionCutoff = Math.ceil(event.srcElement.value/100);
 	}
 	document.getElementById("polygon").oninput = function(){
 		polygonNumber = event.srcElement.value;
-		geneLen = polygonNumber * (4 + vertices * 2);
+		geneLen = polygonNumber * (4+ vertices * 2);
 		val5.innerHTML = polygonNumber;
 	}
 	drawOriginalImage();
 	initPopulation();
 	initCurData();
+	console.log(111);
 }
-
-
-
-
-
-
-
-
-
-
