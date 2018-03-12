@@ -246,103 +246,168 @@ function initialize() {
   }
 }
 
+function getParameters() {
+    genePoolSize = document.getElementById("genePoolSize").value;
+    console.log(genePoolSize);
 
+    mutationRate = document.getElementById("mutationRate").value / 100;
+    console.log(mutationRate);
 
-function getFittest() {
-	return individuals.sort(function(a, b) {
-      return b.fitness - a.fitness;
-    })[0];
-}
+    mutationAmount = document.getElementById("mutationAmount").value / 100;
+    console.log(mutationAmount);
 
-function timeFormat(s) {
-	var h = Math.floor(s / 3600);
-	var m = Math.floor(s % 3600 / 60);
+    selectionCutoff = document.getElementById("selectionCutoff").value / 100;
+    console.log(selectionCutoff);
 
-	s = Math.floor(s % 3600 % 60);
+    polygonNum = document.getElementById("polygonNumber").value;
+    console.log(polygonNum);
 
-	return ((h > 0 ? h + ':' : '') +
-	        (m > 0 ? (h > 0 && m < 10 ? '0' : '') +
-	         m + ':' : '0:') + (s < 10 ? '0' : '') + s);
-}
+    vertices = document.getElementById("vertexNumber").value; 
+    console.log(vertices);
 
-// function Evolve(){
+    resolution = 75;
 
-// 	//Replace the generated result image from every 100 evolution
-// 	resImage = new Image();
-// 	resImage.src = 'img/fake.jpg';
-// 	resImage.onload = function(){
-//     	contextRes.drawImage(resImage, 0, 0);
-//   }
-// };
+    geneSize = (vertices * 2 + 4);
+    geneLen = geneSize * polygonNum;
 
-
-
-function drawOriginalImage()
-{
-  base_image = new Image();
-  base_image.src = 'img/marilyn-monroe.jpg';
-  base_image.onload = function(){
-    contextOri.drawImage(base_image, 0, 0);
-    // contextRes.drawImage(base_image, 0, 0);
+    curCvs.width = resolution;
+    curCvs.height = resolution;
+    curCvs.style.width = resolution;
+    curCvs.style.height = resolution;
   }
 
+ 
+function runSimulation() {
+  document.body.classList.remove('genetics-inactive');
+  document.body.classList.add('genetics-active');
+  if (isPaused())
+    beginTime = new Date().getTime() - resumedTime;
+
+  if (isStopped()) {
+    numberOfGenerations = 0;
+    numberOfImprovements = 0;
+    beginTime = new Date().getTime();
+    genePool = initGenePool(genePoolSize);
 }
 
-function initPopulation() {
-    individuals.push(generateGene());
-    individuals.push(generateGene());
-}
+    //Each run of newGene produces a new generations of the gene pool
+    function newGene() {
+      generateGenePool();
+      numberOfGenerations++;
 
+      var fittest = getFittest();
+      var totalTime = ((new Date().getTime() - beginTime) / 1000);
+      var timePerGeneration = (totalTime / numberOfGenerations) * 1000;
+      var timePerImprovment = (totalTime / numberOfImprovements) * 1000;
+      var currentFitness = (fittest.fitness * 100);
+      if (currentFitness > highestFitness) {
+        highestFitness = currentFitness;
+        /* Improvement was made */
+        numberOfImprovements++;
+      } else if (currentFitness < lowestFitness) {
+        lowestFitness = currentFitness;
+      }
 
-function initCurData(){
-    var imgData = contextOri.getImageData(0,0, resolution, resolution).data;
-    for(var i = 0; i < 4 * resolution * resolution; i++){
-        curData[i] = imgData[i];
+      drawPolygon(resultCtx, 350, 350, fittest);
+
+      statistics.timePassed.text(timeFormat(Math.round(totalTime)));
+      statistics.numberOfGenerations.text(numberOfGenerations);
+      statistics.timePerGeneration.text(timePerGeneration.toFixed(2) + ' ms');
+      statistics.timePerImprovment.text(timePerImprovment.toFixed(2) + ' ms');
+      statistics.currentFitness.text(currentFitness.toFixed(2) + '%');
     }
-}
+    //run new Gene every second
+    cycle = setInterval(newGene, 0);
+  }
 
-function init(){
-	var val1 = document.getElementById("populationres");
-	var val2 = document.getElementById("mutcres");
-	var val3 = document.getElementById("mutares");	
-	var val4 = document.getElementById("selectionres");
-	var val5 = document.getElementById("polyres");
-	var val6 = document.getElementById("runTime");
-	var val7 = document.getElementById("numOfGenerations");
-	var val8 = document.getElementById("currentFitness");
-	val1.innerHTML = 50;
-	val2.innerHTML = 2.5+'%';
-	val3.innerHTML = 50+'%';
-	val4.innerHTML = 50+'%';
-	val5.innerHTML = 250;
-	val6.innerHTML = 10;
-	val7.innerHTML = 50;
-	val8.innerHTML = 0+'%';
-	document.getElementById("population").oninput = function(){
-		val1.innerHTML = populationSize = event.srcElement.value;	
-	}
-	document.getElementById("mutationChance").oninput = function(){
-		mutationChance = event.srcElement.value;	
-		val2.innerHTML = mutationChance+'%';
-		mutationChance = Math.ceil(event.srcElement.value/100);
-	}
-	document.getElementById("mutationAmount").oninput = function(){
-		mutationAmount = event.srcElement.value;	
-		val3.innerHTML = mutationAmount+'%';
-		mutationAmount = Math.ceil(event.srcElement.value/100);
-	}
-	document.getElementById("selection").oninput = function(){
-		selectionCutoff = event.srcElement.value;
-		val4.innerHTML = selectionCutoff+'%';
-		selectionCutoff = Math.ceil(event.srcElement.value/100);
-	}
-	document.getElementById("polygon").oninput = function(){
-		polygonNumber = event.srcElement.value;
-		geneLen = polygonNumber * (4+ vertices * 2);
-		val5.innerHTML = polygonNumber;
-	}
-	drawOriginalImage();
-	initPopulation();
-	initCurData();
-	console.log(111);
+  //Start the program to produce gener
+  function runGenerations() {
+    if (isStopped()) {
+      getParameters();
+      initOriginalImage();
+    }
+
+    // $('.conf-slider').slider('option', 'disabled', true);
+    document.getElementById('run').innerHTML = "Pause";
+    runSimulation();
+  }
+
+  function pauseGenerations() {
+    clearInterval(cycle);
+    cycle = null;
+    resumedTime = new Date().getTime() - beginTime;
+    document.getElementById("run").innerHTML = "Resume";
+    $('.results-btn').removeAttr('disabled');
+  }
+
+  
+  //Stop producing gene generations
+  function stopGenerations() {
+    clearInterval(cycle);
+    cycle = null;
+    numberOfGenerations = null;
+    beginTime = null;
+    genePool = null;
+    highestFitness = 0;
+    lowestFitness = 100;
+    resumedTime = 0;
+    document.getElementById('time-passed').innerHTML = '0:00';
+    // $('.conf-slider').slider('option', 'disabled', false);
+
+    document.body.classList.remove('genetics-active');
+    document.body.classList.add('genetics-inactive');
+
+    /* Clear the drawing */
+    resultCtx.clearRect(0, 0, 350, 350);
+    curCtx.clearRect(0, 0, resolution, resolution);
+    document.getElementById("run").innerHTML = "Run";
+  }
+
+  function timeFormat(s) {
+    var hour = Math.floor(s / 3600);
+    var min = Math.floor(s % 3600 / 60);
+    s = Math.floor(s % 3600 % 60);
+    return ((hour > 0 ? hour + ':' : '') + (min > 0 ? (hour > 0 && min< 10 ? '0' : '') + min + ':' : '0:') + (s < 10 ? '0' : '') + s);
+  }
+
+  document.getElementById("run").onclick = function(){
+    if (isRunning()) {
+      pauseGenerations();
+    } else {
+      runGenerations();
+    }
+  }
+
+  document.getElementById("stop").onclick = function(){
+    if (isRunning() || isPaused()) {
+      stopGenerations();
+    }
+  }
+
+  function init() {
+    resultCvs = document.getElementById('resultCvs');
+    curCvs = document.getElementById('curCvs');
+    originalCvs = document.getElementById('originalCvs');
+    originalImage = document.getElementById('originalImage');
+    resultCtx = resultCvs.getContext('2d');
+    curCtx = curCvs.getContext('2d');
+    originalCtx = originalCvs.getContext('2d');
+
+    statistics = {
+      timePassed: $('#time-passed'),
+      numberOfGenerations: $('#number-of-generations'),
+      timePerGeneration: $('#time-per-generation'),
+      timePerImprovment: $('#time-per-improvement'),
+      currentFitness: $('#current-fitness')
+    };
+    initialize();
+    getParameters();
+
+    initOriginalImage();
+    
+    $('#run').attr('disabled', false);
+    $('#stop').attr('disabled', false);
+  }
+window.onload = function() {
+  init();
 }
