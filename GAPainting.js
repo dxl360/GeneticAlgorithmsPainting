@@ -39,25 +39,85 @@ var curData = [];
   var beginTime;
   var resumedTime = 0;
   
-window.onload = function(){
-	init();
-	  
-	document.getElementById("run").onclick = function () {
-		alert("Running");
-		// Evolve();
-		runGA();
-	};
-	document.getElementById("pause").onclick = function () {
-		// Pause Evolve()
-		alert("Paused");
-		pauseGA();
-	};
-	document.getElementById("stop").onclick = function () {
-		// Pause Evolve()
-		alert("Stopped");
-		stopGA();
-	};
+function Gene(father, mother) {
+    /* The Gene's genetic composition */
+    this.gene = [];
 
+    if (!(father && mother)) {
+      for (var g = 0; g < geneLen; g += geneSize) {
+        this.gene.push(Math.random(), Math.random(),  Math.random(), Math.max(Math.random() * Math.random(), 0.3)); 
+
+        var x = Math.random();
+        var y = Math.random();
+
+        for (var j = 0; j < vertices; j++) {
+          this.gene.push(x + Math.random() - 0.5, // X
+                        y + Math.random() - 0.5); // Y
+        }
+      }
+    }else{
+      var inheritSplit = (Math.random() * geneLen) >> 0;
+
+      for (var i = 0; i < geneLen; i += geneSize) {
+
+        var inheritedGene = (i < inheritSplit) ? father : mother;
+        for (var j = 0; j < geneSize; j++) {
+          var dna = inheritedGene[i + j];
+
+          /* Mutate the gene */
+          if (Math.random() < mutationRate) {
+            dna += Math.random() * mutationAmount * 2 - mutationAmount;
+            if (dna < 0)
+              dna = 0;
+            if (dna > 1)
+              dna = 1;
+          }
+          this.gene.push(dna);
+        }
+      }
+      
+    }
+    drawPolygon(curCtx, resolution, resolution, this);
+    var imageData = curCtx.getImageData(0, 0,resolution,resolution).data;
+    var diff = 0;
+      for (var p = 0; p < 4* resolution * resolution; p++) {
+        var dp = imageData[p] - curData[p];
+        diff += dp * dp;
+      }
+      this.fitness = 1 - diff / (resolution * resolution * 4 * 256 * 256);
+  }
+
+//Get the gene sequence with the best fitness value
+function getFittest() {
+  return geneSeq.sort(function(a, b) {
+      return b.fitness - a.fitness;
+    })[0];
+}
+
+function drawPolygon(context, width, height, individual){
+   context.fillStyle = '#000';
+   context.fillRect(0, 0, width, height);
+   for(var i = 0; i < geneLen; i += geneSize){
+
+     context.beginPath();
+     //Could tune some parameters here
+     context.moveTo(individual.gene[i + 4] * width, individual.gene[i + 5] * height);
+
+     //draw each vertices
+     for(var j = 0; j < vertices - 1; j++){
+       context.lineTo(width * individual.gene[i + j * 2 + 6], height * individual.gene[i + j * 2 + 7]);
+     }
+
+     context.closePath();
+
+     var styleString = 'rgba(' +((individual.gene[i] * 255) >> 0) + ',' + ((individual.gene[i + 1] * 255) >> 0) + ',' + ((individual.gene[i + 2] * 255) >> 0) + ',' + 
+     individual.gene[i + 3] + ')'; 
+
+  
+     context.fillStyle = styleString;
+     context.fill();
+      
+  }
 }
 
 function runGA() {
@@ -104,25 +164,7 @@ function stopGA() {
     contextCur.clearRect(0, 0, resolution, resolution);
 }
 
-function generateGene() {
-	var i = new Individual();
-	i.fitness = 0.5;
-	/* Generate RGBA color values */
-    i.gene.push(Math.random(), // R
-			Math.random(), // G
-			Math.random(), // B
-			Math.max(Math.random() * Math.random(), 0.2)); // A
 
-    /* Generate XY positional values */
-    var x = Math.random();
-    var y = Math.random();
-
-    for (var j = 0; j < vertices; j++) {
-      i.gene.push(x + Math.random() - 0.5, // X
-                 		y + Math.random() - 0.5); // Y
-    }
-    return i;
-}
 
 function generatePopulation() {
 	if (individuals.length > 1) {
@@ -191,116 +233,6 @@ function timeFormat(s) {
 //   }
 // };
 
-/* Each individual represents a single gene in the gene pool.
-Randomly decide in the Population if it's inherited from both parents or randomly generated */
-function Individual(randInt, father, mother){
-	this.gene = [];
-
-	if(randInt == 0){
-		//randomly generate a new gene
-		for(var i = 0; i < geneLen; i += geneSize ){
-			//RGBA
-			this.gene.push(Math.random(),  Math.random(), Math.random(), Math.max(Math.random() * Math.random(), 0.4));
-
-			var xOffset = Math.random();
-			var yOffset = Math.random();
-
-			//randomly generate positions for each vertex of the polygon
-			for(var j = 0; j < verices; j++){
-				//randomly generate x, y pos for each of the vertex
-				this.gene.push(xOffset + Math.random() - 0.6, yOffset + Math.random() - 0.6);
-			}
-		}
-
-	}else{
-		//inherit from both parents
-		var inheritSplit = (Math.random() * geneLen) >> 0;
-
-		for (var i = 0; i < geneLen; i += geneSize) {
-
-			/* The parent's gene which will be inherited */
-			var inheritedGene;
-	
-			if (randomInheritance) {
-			  /* Randomly inherit genes from parents in an uneven manner */
-			  inheritedGene = (i < inheritSplit) ? father : mother;
-			} else {
-			  /* Inherit genes evenly from both parents */
-			  inheritedGene = (Math.random() < 0.5) ? father : mother;
-			}
-	
-			
-			for (var j = 0; j < geneSize; j++) {
-	
-			  var singleGene = inheritedGene[i + j];
-	
-			  if (Math.random() < mutationChance) {
-	
-				/* Apply the random mutation */
-				singleGene += Math.random() * mutationAmount * 2 - mutationAmount;
-	
-				/* Keep the value in range */
-				if (singleGene < 0)
-					singleGene = 0;
-	
-				if (singleGene > 1)
-				  	singleGene = 1;
-			  }
-			  this.gene.push(singleGene);
-			}
-		  }
-	}
-
-	drawPolygon(contextCur,resolution, resolution, this);
-
-	var imgData = contextCur.getImageData(0, 0, resolution, resolution).data;
-	var diff = 0;
-
-	//get the fitness value for the gene
-	//sum differences
-	for(var i = 0; i < 4 *  resolution * resolution; i++){
-		diff += Math.abs(imgData[i] - curData[i]);
-	}
-
-	this.fitness = 1 - diff / (resolution * resolution * 256 * 4);
-}
-
-
-function drawPolygon(context, width, height, individual){
-	context.fillStyle = '#000';
-	context.fillRect(0, 0, width, height);
-	//draw gene sequentially
-	for(var i = 0; i < geneLen; i += geneSize){
-		// context.beginPath();
-		// context.rect(20, 20, 150, 100);
-		// context.fillStyle = "red";
-		// context.fill();
-		//starting vertex
-		context.beginPath();
-		
-		//Could tune some parameters here
-		context.moveTo(individual.gene[i + 4] * width, individual.gene[i + 5] * height);
-
-		//draw each vertices
-		for(var j = 0; j < vertices - 1; j++){
-			context.lineTo(width * individual.gene[i + j * 2 + 6], height * individual.gene[i + j * 2 + 7]);
-		}
-
-		context.closePath();
-
-		var styleString = 'rgba(' +
-		((individual.gene[i] * 255) >> 0) + ',' + 
-		((individual.gene[i + 1] * 255) >> 0) + ',' + 
-		((individual.gene[i + 2] * 255) >> 0) + ',' + 
-		individual.gene[i + 3] + ')'; 
-
-		//create a polygon
-		context.fillStyle = styleString;
-		context.fill();
-		
-  }
-
-}
 
 
 function drawOriginalImage()
