@@ -120,6 +120,58 @@ function drawPolygon(context, width, height, individual){
   }
 }
 
+function initGenePool(size) {
+  geneSeq = [];
+  for(var i = 0; i < size; i++){
+    geneSeq.push(new Gene());
+  } 
+}
+
+function generateGenePool() {
+  if (geneSeq.length > 1) {
+    var size = geneSeq.length;
+    var offspring = [];
+    
+    var selectCount = Math.floor(geneSeq.length * selectionCutoff);
+  
+    var randCount = Math.ceil(1 / selectionCutoff);
+    geneSeq = geneSeq.sort(function(a, b) {
+      return b.fitness - a.fitness;
+    });
+
+    for (var i = 0; i < selectCount; i++) {
+          for (var j = 0; j < randCount; j++) {
+            var randIndividual = i;
+            while (randIndividual == i)
+              randIndividual = (Math.random() * selectCount) >> 0;
+              offspring.push(new Gene(geneSeq[i].gene,
+              geneSeq[randIndividual].gene));
+          }
+    }
+    geneSeq = offspring;
+    geneSeq.length = size;
+  } else {
+    var parent = geneSeq[0];
+    var child = new Gene(parent.gene, parent.gene);
+    if (child.fitness > parent.fitness)
+      geneSeq = [child];
+  }
+}
+
+
+function isRunning() {
+  return cycle;
+}
+
+function isPaused() {
+  return numberOfGenerations && !cycle;
+}
+
+
+function isStopped() {
+  return !isRunning() && !isPaused();
+}
+
 function runGA() {
 	$('#run').text('Run');
 	while (count < 1000) {
