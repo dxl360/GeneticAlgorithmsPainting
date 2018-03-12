@@ -172,91 +172,81 @@ function isStopped() {
   return !isRunning() && !isPaused();
 }
 
-function runGA() {
-	$('#run').text('Run');
-	while (count < 1000) {
-		count++;
-		generatePopulation();
-		numOfGenerations++;
-		var fittest = getFittest();
-		var totalTime = ((new Date().getTime() - beginTime) / 1000);
-		// var timePerGeneration = (totalTime / numOfGenerations) * 1000;
-		// var timePerEvolution = (totalTime / numOfEvolutions) * 1000;
-		var currentFitness = (fittest.fitness * 100);
-		// if (currentFitness > bestFitness) {
-		// 	bestFitness = currentFitness;
-		// 	/* Improvement was made */
-		// 	numberOfImprovements++;
-		// 	} else if (currentFitness < worstFitness) {
-		// 	worstFitness = currentFitness;
-		// }
-		/* draw the best fit to output */
-		drawPolygon(contextRes, 350, 350, fittest);
-		/* update statistics */
-		document.getElementById("runTime").innerHTML = timeFormat(Math.round(totalTime));
-		document.getElementById("numOfGenerations").innerHTML = numOfGenerations;
-		document.getElementById("currentFitness").innerHTML = currentFitness.toFixed(2) + '%';
-	}
-}
-
-function pauseGA() {
-	lapseTime = new Date().getTime() - beginTime;
-	$('#run').text('Resume');
-}
-
-function stopGA() {
-	numOfGenerations = null;
-    beginTime = null;
-    // bestFitness = 0;
-    // worstFitness = 100;
-    lapseTime = 0;
-    document.getElementById("runTime").innerHTML = "0:00";
-    /* Clear the drawing */
-    contextRes.clearRect(0, 0, 350, 350);
-    contextCur.clearRect(0, 0, resolution, resolution);
+function setImage(src) {
+  originalImage.onload = initOriginalImage;
+  originalImage.src = src;
 }
 
 
-
-function generatePopulation() {
-	if (individuals.length > 1) {
-		var size = individuals.length;
-    	var offspring = [];
-    	/* The number of individuals from the current generation to select for breeding */
-		// var selectCount = Math.floor(individuals.length * selectionCutoff);
-		var selectCount = 7;
-		/* The number of individuals to randomly generate */
-		var randCount = Math.ceil(1 / selectionCutoff);
-		individuals = individuals.sort(function(a, b) {
-			return b.fitness - a.fitness;
-		});
-
-		// console.log("Select Count");
-		// console.log(selectCount);
-		for (var i = 0; i < selectCount; i++) {
-	        for (var j = 0; j < randCount; j++) {
-	          var randIndividual = i;
-	          while (randIndividual == i)
-				randIndividual = (Math.random() * selectCount) >> 0;
-				//console.log("Rand Ind");
-				//console.log(randIndividual);
-	          	offspring.push(new Individual(Math.random(), individuals[i].gene,
-				  individuals[randIndividual].gene));
-	        }
-	    }
-		// individuals = individuals.concat(offspring);
-		individuals = offspring;
-		// console.log(individuals.length);
-		// console.log("Offspring");
-		// console.log(offspring);
-	    individuals.length = size;
-	} else {
-		var parent = individuals[0];
-		var child = new Individual(parent.gene, parent.gene);
-		if (child.fitness > parent.fitness)
-			individuals = [child];
-	}
+function initOriginalImage() {
+  initCurData();
+  drawOriginalImage();
 }
+
+function drawOriginalImage() {
+  originalCvs.width = 350;
+  originalCvs.height = 350;
+
+  base_image = new Image();
+  base_image.src = 'The_Girl_With_The_Pearl_Earring.png';
+
+  base_image.onload = function(){
+    originalCtx.drawImage(base_image, 0, 0);
+  }
+  // equivalent to setImage(base_image.src)
+  originalImage.src = base_image.src;
+
+  highestFitness = 0;
+  lowestFitness = 100;
+}
+
+function initCurData(){
+  originalCvs.width = resolution;
+  originalCvs.height = resolution;
+  originalCtx.drawImage(originalImage,
+                          0, 0, 350, 350, 0, 0,
+                          resolution, resolution);
+  var imgData = originalCtx.getImageData(0,0, resolution, resolution).data;
+  curData = [];
+  for(var i = 0; i < 4 * resolution * resolution; i++){
+      curData[i] = imgData[i];
+  }
+}
+
+function initialize() {
+  var gps = document.getElementById("genePoolSizeRes");
+  var mr = document.getElementById("mutationRateRes");
+  var ma = document.getElementById("mutationAmountRes");
+  var sc = document.getElementById("selectionCutoffRes");
+  var pn = document.getElementById("polygonNumberRes");
+  var vn = document.getElementById("vertexNumberRes");
+  gps.innerHTML = 50;
+  mr.innerHTML = 2+'%';
+  ma.innerHTML = 15+'%';
+  sc.innerHTML = 15+'%';
+  pn.innerHTML = 150;
+  vn.innerHTML = 3;
+  document.getElementById("genePoolSize").onchange = function(){
+    gps.innerHTML = event.srcElement.value;
+  }
+  document.getElementById("mutationRate").onchange = function(){
+    mr.innerHTML = event.srcElement.value +'%';
+  }
+  document.getElementById("mutationAmount").onchange = function(){
+    ma.innerHTML = event.srcElement.value+'%';
+  }
+  document.getElementById("selectionCutoff").onchange = function(){
+    sc.innerHTML = event.srcElement.value+'%';
+  }
+  document.getElementById("polygonNumber").onchange = function(){
+    pn.innerHTML = event.srcElement.value;
+  }
+  document.getElementById("vertexNumber").onchange = function(){
+    vn.innerHTML = event.srcElement.value;
+  }
+}
+
+
 
 function getFittest() {
 	return individuals.sort(function(a, b) {
