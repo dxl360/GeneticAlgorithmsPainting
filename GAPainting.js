@@ -38,12 +38,7 @@ var curData = [];
   var genePool;
   var beginTime;
   var resumedTime = 0;
-<<<<<<< HEAD
 
-
-=======
-  
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
 function Gene(father, mother) {
     /* The Gene's genetic composition */
     this.gene = [];
@@ -112,15 +107,9 @@ function drawPolygon(context, width, height, individual){
      for(var j = 0; j < vertices - 1; j++){
        context.lineTo(width * individual.gene[i + j * 2 + 6], height * individual.gene[i + j * 2 + 7]);
      }
-<<<<<<< HEAD
 
      context.closePath();
 
-=======
-
-     context.closePath();
-
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
      var styleString = 'rgba(' +((individual.gene[i] * 255) >> 0) + ',' + ((individual.gene[i + 1] * 255) >> 0) + ',' + ((individual.gene[i + 2] * 255) >> 0) + ',' + 
      individual.gene[i + 3] + ')'; 
 
@@ -130,7 +119,7 @@ function drawPolygon(context, width, height, individual){
       
   }
 }
-<<<<<<< HEAD
+
 
 function initGenePool(size) {
   geneSeq = [];
@@ -139,16 +128,6 @@ function initGenePool(size) {
   } 
 }
 
-=======
-
-function initGenePool(size) {
-  geneSeq = [];
-  for(var i = 0; i < size; i++){
-    geneSeq.push(new Gene());
-  } 
-}
-
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
 function generateGenePool() {
   if (geneSeq.length > 1) {
     var size = geneSeq.length;
@@ -194,12 +173,6 @@ function isStopped() {
   return !isRunning() && !isPaused();
 }
 
-<<<<<<< HEAD
-
-
-  
-=======
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
 function setImage(src) {
   originalImage.onload = initOriginalImage;
   originalImage.src = src;
@@ -249,17 +222,10 @@ function initialize() {
   var pn = document.getElementById("polygonNumberRes");
   var vn = document.getElementById("vertexNumberRes");
   gps.innerHTML = 50;
-<<<<<<< HEAD
   mr.innerHTML = 1+'%';
   ma.innerHTML = 10+'%';
   sc.innerHTML = 15+'%';
   pn.innerHTML = 125;
-=======
-  mr.innerHTML = 2+'%';
-  ma.innerHTML = 15+'%';
-  sc.innerHTML = 15+'%';
-  pn.innerHTML = 150;
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
   vn.innerHTML = 3;
   document.getElementById("genePoolSize").onchange = function(){
     gps.innerHTML = event.srcElement.value;
@@ -281,11 +247,8 @@ function initialize() {
   }
 }
 
-<<<<<<< HEAD
+
   function getParameters() {
-=======
-function getParameters() {
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
     genePoolSize = document.getElementById("genePoolSize").value;
     console.log(genePoolSize);
 
@@ -346,15 +309,7 @@ function runSimulation() {
       } else if (currentFitness < lowestFitness) {
         lowestFitness = currentFitness;
       }
-<<<<<<< HEAD
-
       drawPolygon(resultCtx, 350, 350, fittest);
-
-=======
-
-      drawPolygon(resultCtx, 350, 350, fittest);
-
->>>>>>> a63ce768377fdfac6191f5e9ecda421d6cd4a56d
       statistics.timePassed.text(timeFormat(Math.round(totalTime)));
       statistics.numberOfGenerations.text(numberOfGenerations);
       statistics.timePerGeneration.text(timePerGeneration.toFixed(2) + ' ms');
