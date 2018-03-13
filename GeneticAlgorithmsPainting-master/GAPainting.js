@@ -285,7 +285,7 @@ function runSimulation() {
     numberOfImprovements = 0;
     beginTime = new Date().getTime();
     genePool = initGenePool(genePoolSize);
-}
+  }
 
     //Each run of newGene produces a new generations of the gene pool
     function newGene() {
@@ -312,6 +312,9 @@ function runSimulation() {
       statistics.timePerGeneration.text(timePerGeneration.toFixed(2) + ' ms');
       statistics.timePerImprovment.text(timePerImprovment.toFixed(2) + ' ms');
       statistics.currentFitness.text(currentFitness.toFixed(2) + '%');
+
+      progressbtn.style.width= Math.max((currentFitness - 95)*20, 0).toFixed(2) + '%';
+
     }
     //run new Gene every second
     cycle = setInterval(newGene, 0);
@@ -358,6 +361,7 @@ function runSimulation() {
     resultCtx.clearRect(0, 0, 350, 350);
     curCtx.clearRect(0, 0, resolution, resolution);
     document.getElementById("run").innerHTML = "Run";
+    progressbtn.style.width= '0%';
   }
 
   function timeFormat(s) {
@@ -397,6 +401,7 @@ function runSimulation() {
       timePerImprovment: $('#time-per-improvement'),
       currentFitness: $('#current-fitness')
     };
+    progressbtn = document.getElementById('progressbtn');
     initialize();
     getParameters();
 
